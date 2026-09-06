@@ -9,6 +9,8 @@ import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
 import StaffLogin from '../pages/auth/StaffLogin';
 import StaffRoute from '../components/auth/StaffRoute';
+import AdminLogin from '../pages/auth/AdminLogin';
+import AdminRoute from '../components/auth/AdminRoute';
 
 // Farmer Pages
 import Dashboard from '../pages/farmer/Dashboard';
@@ -37,6 +39,7 @@ export default function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/staff/login" element={<StaffLogin />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
 
       {/* Farmer Portal */}
       <Route path="/farmer" element={<Layout />}>
@@ -69,7 +72,14 @@ export default function AppRoutes() {
       </Route>
 
       {/* Admin Portal */}
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
+        }
+      >
         <Route index element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="centres" element={<AdminCentres />} />

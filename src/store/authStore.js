@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { authService, MOCK_STAFF_USER } from '../services/authService';
+import { authService } from '../services/authService';
 
 export const useAuthStore = create((set) => ({
   user: authService.getStoredUser(),
@@ -31,6 +31,18 @@ export const useAuthStore = create((set) => ({
     }
   },
 
+  loginAdmin: async (identifier, password) => {
+    set({ isLoading: true });
+    try {
+      const { user } = await authService.login(identifier, password, 'admin');
+      set({ user, role: 'admin', isAuthenticated: true, isLoading: false });
+      return user;
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+
   register: async (formData) => {
     set({ isLoading: true });
     try {
@@ -46,6 +58,6 @@ export const useAuthStore = create((set) => ({
   logout: () => {
     authService.logout();
     set({ user: null, role: null, isAuthenticated: false });
-  }
+  },
 }));
 

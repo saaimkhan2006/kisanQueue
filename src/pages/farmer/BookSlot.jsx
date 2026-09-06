@@ -5,6 +5,8 @@ import { useBookingStore } from '../../store/bookingStore';
 import { useQueueStore } from '../../store/queueStore';
 import { CROPS } from '../../utils/constants';
 
+import { useAdminStore } from '../../store/adminStore';
+
 export default function BookSlot() {
   const [searchParams] = useSearchParams();
   const preselectedCentreId = searchParams.get('centre') || 'C002'; // default recommended Nanjangud
@@ -20,6 +22,7 @@ export default function BookSlot() {
   const navigate = useNavigate();
   const createBooking = useBookingStore((s) => s.createBooking);
   const showToast = useQueueStore((s) => s.showToast);
+  const mspRates = useAdminStore((s) => s.mspRates);
 
   useEffect(() => {
     centreService.getCentres().then((data) => setCentres(data));
@@ -27,7 +30,8 @@ export default function BookSlot() {
 
   const selectedCrop = CROPS.find((c) => c.id === selectedCropId) || CROPS[0];
   const selectedCentre = centres.find((c) => c.id === selectedCentreId) || centres[0];
-  const estimatedPayout = (Number(quantity) || 0) * (selectedCrop?.msp || 4290);
+  const currentMsp = mspRates[selectedCropId] || selectedCrop?.msp || 4290;
+  const estimatedPayout = (Number(quantity) || 0) * currentMsp;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +49,7 @@ export default function BookSlot() {
         produceType: selectedCrop.id,
         cropName: selectedCrop.name,
         quantityQuintals: Number(quantity),
-        mspRatePerQuintal: selectedCrop.msp,
+        mspRatePerQuintal: currentMsp,
         estimatedTotalAmount: estimatedPayout,
         slotDate,
         slotTime,
