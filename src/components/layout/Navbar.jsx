@@ -84,7 +84,7 @@ export default function Navbar() {
             <div className="hidden xl:flex items-center gap-1.5 pl-3 border-l border-primary-container">
               <span className="material-symbols-outlined text-tertiary-fixed text-[14px]">verified</span>
               <span className="text-surface-container-lowest font-medium">{user.name}</span>
-              <span className="text-primary-fixed-dim">({user.kisanId})</span>
+              <span className="text-primary-fixed-dim">({user.kisanId || user.badgeNo || 'KA-MY-8924'})</span>
             </div>
           )}
         </div>
