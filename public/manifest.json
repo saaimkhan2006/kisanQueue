@@ -1,0 +1,18 @@
+{
+  "name": "KisanQueue — National Mandi Remote Queue & DBT Grid",
+  "short_name": "KisanQueue",
+  "description": "Real-time mandi queue visibility, intelligent departure guidance, and congestion-aware procurement centre recommendation (DoCA / Digital India).",
+  "start_url": "/farmer/dashboard",
+  "display": "standalone",
+  "background_color": "#faf8ff",
+  "theme_color": "#00362a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
