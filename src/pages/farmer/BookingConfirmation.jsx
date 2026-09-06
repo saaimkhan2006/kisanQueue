@@ -9,13 +9,16 @@ export default function BookingConfirmation() {
   const showToast = useQueueStore((s) => s.showToast);
 
   useEffect(() => {
-    bookingService.getMyActiveBooking().then((data) => setBooking(data));
+    bookingService.getAllBookings().then((list) => {
+      const found = list.find((b) => b.bookingId === id) ?? list[0] ?? null;
+      setBooking(found);
+    });
   }, [id]);
 
   if (!booking) return null;
 
   const handleWhatsApp = () => {
-    showToast(`Token ${booking.token} entry pass sent to registered WhatsApp (+91 98765 43210)`, 'send');
+    showToast(`Token ${booking.token} entry pass sent to registered WhatsApp (+91 98451 23456)`, 'send');
   };
 
   return (
@@ -59,7 +62,7 @@ export default function BookingConfirmation() {
               </span>
             </div>
             <span className="text-[10px] font-mono text-on-surface-variant mt-1 uppercase">
-              Gate 2 Scan Pass
+              {booking.gate} Pass
             </span>
           </div>
         </div>
@@ -83,7 +86,7 @@ export default function BookingConfirmation() {
             <span className="font-bold text-primary text-base block mt-0.5">
               ₹{booking.estimatedTotalAmount?.toLocaleString('en-IN')}
             </span>
-            <span className="text-[11px] text-emerald-700 font-semibold">Direct DBT to SBI ****8492</span>
+            <span className="text-[11px] text-emerald-700 font-semibold">Direct DBT to Canara Bank ****8492</span>
           </div>
 
           <div>

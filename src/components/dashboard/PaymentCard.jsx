@@ -1,7 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useQueueStore } from '../../store/queueStore';
+import { useAuthStore } from '../../store/authStore';
 
 export default function PaymentCard() {
+  const liveQueue = useQueueStore((s) => s.liveQueue);
+  const user = useAuthStore((s) => s.user);
+
+  const amount = liveQueue ? (liveQueue.quantityQuintals * 4290) : 214500;
+  const crop = liveQueue ? liveQueue.cropName : 'Ragi (Finger Millet)';
+  const qty = liveQueue ? liveQueue.quantityQuintals : 50;
+
   return (
     <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-surface-container">
       <div className="flex items-center justify-between pb-4 mb-4 border-b border-surface-container">
@@ -29,17 +38,17 @@ export default function PaymentCard() {
         <div>
           <p className="text-xs font-medium text-on-surface-variant">Estimated Guaranteed MSP Payout</p>
           <p className="font-headline text-2xl sm:text-3xl font-extrabold text-primary mt-1">
-            ₹1,47,875
+            ₹{amount.toLocaleString('en-IN')}
           </p>
           <p className="text-xs text-on-surface-variant mt-0.5">
-            65 Quintals Wheat @ ₹2,275 / Qtl (Govt MSP 2025-26)
+            {qty} Quintals {crop} (Govt MSP 2025-26)
           </p>
         </div>
 
         <div className="text-left sm:text-right">
           <p className="text-xs font-medium text-on-surface-variant">Receiving Bank Account</p>
-          <p className="text-sm font-bold text-on-surface mt-0.5">State Bank of India</p>
-          <p className="text-xs font-mono text-on-surface-variant">A/C: *******8492 • IFSC: SBIN0001234</p>
+          <p className="text-sm font-bold text-on-surface mt-0.5">{user?.bankAccount?.bankName || 'Canara Bank (Mysore Main)'}</p>
+          <p className="text-xs font-mono text-on-surface-variant">A/C: {user?.bankAccount?.accountMasked || '*******8492'} &bull; IFSC: {user?.bankAccount?.ifsc || 'CNRB0001234'}</p>
         </div>
       </div>
 

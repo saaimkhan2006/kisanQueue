@@ -1,17 +1,37 @@
 import { create } from 'zustand';
 import { bookingService } from '../services/bookingService';
+import { useQueueStore } from './queueStore';
 
 export const useBookingStore = create((set, get) => ({
-  activeBooking: null,
+  bookings: [],          // all bookings, newest first
+  activeBooking: null,   // the booking currently shown in the queue monitor
   isLoading: false,
   error: null,
 
+  /** Load the full bookings list + active booking */
+  fetchAllBookings: async () => {
+    set({ isLoading: true });
+    try {
+      const [bookings, active] = await Promise.all([
+        bookingService.getAllBookings(),
+        bookingService.getMyActiveBooking(),
+      ]);
+      set({ bookings, activeBooking: active, isLoading: false });
+    } catch (err) {
+      set({ error: err.message, isLoading: false });
+    }
+  },
+
+  /** Convenience — just refresh the active booking (used by Layout on mount) */
   fetchActiveBooking: async () => {
     set({ isLoading: true });
     try {
-      const booking = await bookingService.getMyActiveBooking();
-      set({ activeBooking: booking, isLoading: false });
-      return booking;
+      const [bookings, active] = await Promise.all([
+        bookingService.getAllBookings(),
+        bookingService.getMyActiveBooking(),
+      ]);
+      set({ bookings, activeBooking: active, isLoading: false });
+      return active;
     } catch (err) {
       set({ error: err.message, isLoading: false });
     }
@@ -21,7 +41,14 @@ export const useBookingStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const newBooking = await bookingService.createBooking(payload);
-      set({ activeBooking: newBooking, isLoading: false });
+      // Prepend to list, set as active
+      set((state) => ({
+        bookings: [newBooking, ...state.bookings],
+        activeBooking: newBooking,
+        isLoading: false,
+      }));
+      // Sync the live queue dashboard with the new booking's token & position
+      await useQueueStore.getState().fetchLiveQueue();
       return newBooking;
     } catch (err) {
       set({ error: err.message, isLoading: false });
@@ -33,10 +60,75 @@ export const useBookingStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       await bookingService.cancelBooking(bookingId);
-      set({ activeBooking: null, isLoading: false });
+      const updatedBookings = get().bookings.filter((b) => b.bookingId !== bookingId);
+      const newActive = updatedBookings[0] ?? null;
+      set({ bookings: updatedBookings, activeBooking: newActive, isLoading: false });
+      // Refresh queue store — if new active exists show it, else clear
+      if (newActive) {
+        await useQueueStore.getState().fetchLiveQueue();
+      } else {
+        useQueueStore.setState({ liveQueue: null });
+      }
     } catch (err) {
       set({ error: err.message, isLoading: false });
       throw err;
     }
-  }
+  },
+
+  /** Switch which booking is active in the queue monitor */
+  setActiveBooking: async (bookingId) => {
+    bookingService.setActiveBookingId(bookingId);
+    const booking = get().bookings.find((b) => b.bookingId === bookingId) ?? null;
+    set({ activeBooking: booking });
+    await useQueueStore.getState().fetchLiveQueue();
+  },
+
+  /** Farmer taps "I've Arrived at Gate" */
+  markArrived: async (bookingId) => {
+    const updated = await bookingService.markArrived(bookingId);
+    if (!updated) return;
+    set((state) => ({
+      bookings: state.bookings.map((b) => b.bookingId === bookingId ? updated : b),
+      activeBooking: state.activeBooking?.bookingId === bookingId ? updated : state.activeBooking,
+    }));
+  },
+
+  /** Staff: call farmer token to weighbridge counter */
+  callToCounter: async (bookingId) => {
+    const updated = await bookingService.callToCounter(bookingId);
+    if (!updated) return;
+    set((state) => ({
+      bookings: state.bookings.map((b) => b.bookingId === bookingId ? updated : b),
+      activeBooking: state.activeBooking?.bookingId === bookingId ? updated : state.activeBooking,
+    }));
+    return updated;
+  },
+
+  /** Staff: complete procurement with weighbridge data */
+  completeProcurement: async (bookingId, procurementData) => {
+    const updated = await bookingService.completeProcurement(bookingId, procurementData);
+    if (!updated) return;
+    set((state) => ({
+      bookings: state.bookings.map((b) => b.bookingId === bookingId ? updated : b),
+      activeBooking: state.activeBooking?.bookingId === bookingId ? updated : state.activeBooking,
+    }));
+    return updated;
+  },
+
+  /** Staff: reject/cancel the consignment from their side */
+  rejectBooking: async (bookingId, reason) => {
+    const updated = await bookingService.rejectBooking(bookingId, reason);
+    if (!updated) return;
+    // Remove from active list — rejected booking is done
+    set((state) => {
+      const remaining = state.bookings.filter((b) => b.bookingId !== bookingId);
+      return {
+        bookings: remaining,
+        activeBooking: state.activeBooking?.bookingId === bookingId
+          ? (remaining[0] ?? null)
+          : state.activeBooking,
+      };
+    });
+  },
 }));
+

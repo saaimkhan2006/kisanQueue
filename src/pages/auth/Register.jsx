@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import { useLocationStore } from '../../store/locationStore';
 import { GOVT_METADATA } from '../../utils/constants';
 
 export default function Register() {
+  const location = useLocationStore();
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     aadhaarMasked: '',
     village: '',
-    district: 'Karnal',
-    state: 'Haryana',
+    district: location.district,
+    state: location.state,
     landHoldingAcres: '',
-    bankName: 'State Bank of India',
+    bankName: 'Canara Bank',
     accountNumber: '',
     ifsc: '',
   });
@@ -40,7 +42,7 @@ export default function Register() {
         bankAccount: {
           bankName: formData.bankName,
           accountMasked: 'XXXX' + (formData.accountNumber.slice(-4) || '8842'),
-          ifsc: formData.ifsc || 'SBIN0001234',
+          ifsc: formData.ifsc || 'CNRB0001024',
           dbtLinked: true,
         },
       });
@@ -161,7 +163,7 @@ export default function Register() {
               <input
                 type="text"
                 disabled
-                value="Karnal, Haryana"
+                value={`${location.district}, ${location.state}`}
                 className="w-full px-3.5 py-2.5 bg-surface-container text-on-surface-variant rounded-xl border border-surface-container text-sm cursor-not-allowed"
               />
             </div>
@@ -198,7 +200,7 @@ export default function Register() {
                   required
                   value={formData.ifsc}
                   onChange={handleChange}
-                  placeholder="SBIN0001234"
+                  placeholder="CNRB0001024"
                   className="w-full px-3 py-2 bg-surface-container-lowest text-on-surface rounded-lg border border-surface-container text-xs focus:outline-none font-mono uppercase"
                 />
               </div>

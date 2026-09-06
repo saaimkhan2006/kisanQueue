@@ -10,7 +10,7 @@ export default function RouteMapModal({ isOpen, onClose }) {
   const handleLaunchGmaps = () => {
     window.open(
       `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        'Karnal Central APMC Mandi Gate 2'
+        `${liveQueue.centreName} ${liveQueue.gate} Mysore`
       )}`,
       '_blank'
     );
@@ -27,7 +27,7 @@ export default function RouteMapModal({ isOpen, onClose }) {
               <span className="material-symbols-outlined text-[20px]">navigation</span>
             </div>
             <h3 className="font-headline text-lg font-bold text-primary">
-              Gate 2 Navigation Route
+              Gate Navigation Route
             </h3>
           </div>
           <button
@@ -38,21 +38,21 @@ export default function RouteMapModal({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Map Route Visual Placeholder / Card */}
+        {/* Map Route Visual Card */}
         <div className="w-full h-48 bg-primary-container rounded-xl relative overflow-hidden mb-4 border border-primary/20 flex flex-col justify-between p-4 text-on-primary">
           <div className="flex items-center justify-between">
             <span className="px-2.5 py-1 bg-secondary text-on-secondary rounded-full text-xs font-bold uppercase tracking-wider">
               Priority Tractor Corridor
             </span>
             <span className="text-xs font-mono bg-primary/80 px-2 py-0.5 rounded-md">
-              Gate 02 Weighbridge Bay
+              {liveQueue.gate}
             </span>
           </div>
 
           <div>
-            <p className="text-sm font-semibold opacity-80">Origin: Kachhwa Farm Road</p>
-            <p className="text-lg font-bold">Destination: Karnal Central APMC Yard</p>
-            <p className="text-xs text-primary-fixed mt-0.5">Entry restricted to Token C-117 holders</p>
+            <p className="text-sm font-semibold opacity-80">Origin: Jayapura Farm Road, Mysore</p>
+            <p className="text-lg font-bold">Destination: {liveQueue.centreName}</p>
+            <p className="text-xs text-primary-fixed mt-0.5">Priority lane active for Token {liveQueue.token}</p>
           </div>
         </div>
 
@@ -60,15 +60,15 @@ export default function RouteMapModal({ isOpen, onClose }) {
         <div className="space-y-2 mb-5 bg-surface-container-low p-3.5 rounded-xl border border-surface-container">
           <div className="flex items-center justify-between text-sm">
             <span className="text-on-surface-variant font-medium">Designated Entry:</span>
-            <span className="font-bold text-primary">Gate 2 (North Conveyor)</span>
+            <span className="font-bold text-primary">{liveQueue.gate}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-on-surface-variant font-medium">Distance from Farm:</span>
-            <span className="font-bold text-on-surface">8.5 km (Via GT Road)</span>
+            <span className="font-bold text-on-surface">{liveQueue.commuteDistanceKm} km ({liveQueue.routeDesc})</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-on-surface-variant font-medium">Estimated Commute:</span>
-            <span className="font-bold text-secondary">22 min (Tractor speed ~25 km/h)</span>
+            <span className="font-bold text-secondary">{liveQueue.commuteMinutes} min (Tractor speed ~25 km/h)</span>
           </div>
         </div>
 

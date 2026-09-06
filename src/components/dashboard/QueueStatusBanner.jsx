@@ -1,9 +1,8 @@
 import React from 'react';
 import { useQueueStore } from '../../store/queueStore';
 
-export default function QueueStatusBanner({ onOpenMap, onOpenDelay }) {
+export default function QueueStatusBanner({ onOpenMap }) {
   const liveQueue = useQueueStore((s) => s.liveQueue);
-  const simulateNext = useQueueStore((s) => s.simulateStaffNextToken);
 
   if (!liveQueue) return null;
 
@@ -78,13 +77,13 @@ export default function QueueStatusBanner({ onOpenMap, onOpenDelay }) {
                     Token {liveQueue.token}: You have been called to Counter 04!
                   </h2>
                   <p className="text-sm text-on-surface-variant mt-1">
-                    Please present your Token QR code at Mandi Gate 2 weighbridge entry. Priority lane is activated for you.
+                    Please present your Token QR code at {liveQueue.gate} weighbridge entry. Priority lane is activated for you.
                   </p>
                 </>
               ) : isApproaching ? (
                 <>
                   <h2 className="text-xl sm:text-2xl font-bold text-secondary tracking-tight">
-                    You are #{position} in queue! Please begin traveling to the Mandi.
+                    You are #{position} in queue! Please begin traveling to {liveQueue.centreName}.
                   </h2>
                   <p className="text-sm text-on-surface-variant mt-1">
                     Tractor commute time is ~{liveQueue.commuteMinutes} minutes. If you leave now, you will arrive exactly as your token reaches the gate.
@@ -123,7 +122,7 @@ export default function QueueStatusBanner({ onOpenMap, onOpenDelay }) {
                 className="px-4 py-2.5 bg-secondary text-on-secondary hover:bg-secondary-container hover:text-on-secondary-container rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-sm"
               >
                 <span className="material-symbols-outlined text-[18px]">navigation</span>
-                View Gate Route
+                <span>View Gate Route</span>
               </button>
             )}
           </div>

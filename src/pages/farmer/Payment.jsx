@@ -1,14 +1,46 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { paymentService } from '../../services/paymentService';
 
 export default function Payment() {
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    paymentService.getPaymentDetails().then(setData);
+    paymentService.getPaymentDetails().then((res) => {
+      setData(res);
+      setLoading(false);
+    });
   }, []);
 
-  if (!data) return null;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <span className="material-symbols-outlined text-[32px] animate-spin text-primary">progress_activity</span>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="max-w-xl mx-auto text-center py-16 px-6 bg-surface-container-lowest rounded-3xl border border-surface-container shadow-sm mt-8">
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+          <span className="material-symbols-outlined text-[36px]">payments</span>
+        </div>
+        <h2 className="font-headline text-xl font-bold text-on-surface">No Active Payment Record Found</h2>
+        <p className="text-xs text-on-surface-variant mt-2 max-w-md mx-auto">
+          No pending or active MSP disbursal found for your account. Book an APMC mandi slot to initiate direct benefit transfer into your bank account.
+        </p>
+        <Link
+          to="/farmer/book"
+          className="inline-flex mt-6 px-6 py-2.5 bg-primary text-on-primary rounded-xl text-xs font-bold items-center gap-2 shadow-sm hover:bg-primary-container transition-all"
+        >
+          <span className="material-symbols-outlined text-[16px]">add</span>
+          <span>Book a Slot</span>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -87,8 +119,8 @@ export default function Payment() {
           </h3>
           <div className="space-y-2">
             {[
-              { id: 'TXN-9821', crop: 'Mustard (सरसों) - 40 Qtl', date: 'March 24, 2026', amount: '₹2,26,000', status: 'Disbursed to SBI' },
-              { id: 'TXN-8742', crop: 'Paddy Grade A - 85 Qtl', date: 'October 12, 2025', amount: '₹1,97,200', status: 'Disbursed to SBI' },
+              { id: 'TXN-9821', crop: 'Ragi (Finger Millet) - 40 Qtl', date: 'March 24, 2026', amount: '₹1,71,600', status: 'Disbursed to Canara Bank' },
+              { id: 'TXN-8742', crop: 'Paddy Grade A - 85 Qtl', date: 'October 12, 2025', amount: '₹1,97,200', status: 'Disbursed to Canara Bank' },
             ].map((txn) => (
               <div
                 key={txn.id}

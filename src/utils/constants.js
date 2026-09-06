@@ -1,10 +1,12 @@
 export const CROPS = [
-  { id: 'WHEAT', name: 'Wheat (गेहूं / ਕਣਕ)', msp: 2275, unit: 'Quintal', category: 'Rabi' },
-  { id: 'PADDY_COMMON', name: 'Paddy - Common (धान)', msp: 2300, unit: 'Quintal', category: 'Kharif' },
-  { id: 'PADDY_GRADE_A', name: 'Paddy - Grade A (धान ग्रेड-ए)', msp: 2320, unit: 'Quintal', category: 'Kharif' },
-  { id: 'MUSTARD', name: 'Mustard (सरसों)', msp: 5650, unit: 'Quintal', category: 'Rabi' },
-  { id: 'GRAM', name: 'Gram / Chana (चना)', msp: 5440, unit: 'Quintal', category: 'Rabi' },
-  { id: 'COTTON', name: 'Medium Staple Cotton (कपास)', msp: 7121, unit: 'Quintal', category: 'Kharif' },
+  { id: 'RAGI', name: 'Ragi (Finger Millet)', msp: 4290, unit: 'Quintal', category: 'Kharif' },
+  { id: 'PADDY_COMMON', name: 'Paddy (Common)', msp: 2300, unit: 'Quintal', category: 'Kharif' },
+  { id: 'PADDY_GRADE_A', name: 'Paddy (Grade A)', msp: 2320, unit: 'Quintal', category: 'Kharif' },
+  { id: 'MAIZE', name: 'Maize (Corn)', msp: 2225, unit: 'Quintal', category: 'Kharif' },
+  { id: 'GRAM', name: 'Bengal Gram (Chana)', msp: 5440, unit: 'Quintal', category: 'Rabi' },
+  { id: 'TUR', name: 'Tur / Red Gram (Arhar)', msp: 7550, unit: 'Quintal', category: 'Kharif' },
+  { id: 'SUGARCANE', name: 'Sugarcane (FRP)', msp: 3400, unit: 'Quintal', category: 'Annual' },
+  { id: 'WHEAT', name: 'Wheat', msp: 2275, unit: 'Quintal', category: 'Rabi' },
 ];
 
 export const BOOKING_STATUS = {
@@ -27,10 +29,6 @@ export const QUEUE_THRESHOLDS = {
 
 export const LANGUAGES = [
   { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'hi', label: 'हिन्दी (Hindi)', flag: '🇮🇳' },
-  { code: 'pa', label: 'ਪੰਜਾਬੀ (Punjabi)', flag: '🇮🇳' },
-  { code: 'te', label: 'తెలుగు (Telugu)', flag: '🇮🇳' },
-  { code: 'mr', label: 'मराठी (Marathi)', flag: '🇮🇳' },
 ];
 
 export const GOVT_METADATA = {

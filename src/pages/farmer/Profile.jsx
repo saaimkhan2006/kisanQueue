@@ -77,13 +77,13 @@ export default function Profile() {
           <div className="bg-surface-container-low p-4 rounded-xl border border-surface-container">
             <span className="text-xs text-on-surface-variant block">Agricultural Land Records</span>
             <span className="font-bold text-on-surface block mt-1">{user.landHoldingAcres} Acres</span>
-            <span className="text-[11px] text-on-surface-variant">Khasra/Khatauni Verified in Haryana Jamabandi</span>
+            <span className="text-[11px] text-on-surface-variant">Pahani / RTC Verified in Karnataka Bhoomi Portal</span>
           </div>
 
           <div className="bg-surface-container-low p-4 rounded-xl border border-surface-container">
             <span className="text-xs text-on-surface-variant block">Primary Crops Grown</span>
             <span className="font-bold text-on-surface block mt-1">{user.cropsGrown.join(', ')}</span>
-            <span className="text-[11px] text-primary font-semibold">Wheat &amp; Paddy Procurement Eligible</span>
+            <span className="text-[11px] text-primary font-semibold">Ragi, Paddy &amp; Maize Procurement Eligible</span>
           </div>
         </div>
 

@@ -1,15 +1,73 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQueueStore } from '../../store/queueStore';
+import { useBookingStore } from '../../store/bookingStore';
 import VisualQueuePipeline from '../queue/VisualQueuePipeline';
+import CancelBookingModal from '../queue/CancelBookingModal';
 
 export default function LiveQueueCard({ onOpenDelay }) {
   const liveQueue = useQueueStore((s) => s.liveQueue);
+  const allQueues = useQueueStore((s) => s.allQueues);
+  const switchActiveQueue = useQueueStore((s) => s.switchActiveQueue);
+  const cancelBooking = useBookingStore((s) => s.cancelBooking);
+  const showToast = useQueueStore((s) => s.showToast);
+
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
 
   if (!liveQueue) return null;
 
+  const handleCancelConfirm = async (bookingId) => {
+    try {
+      await cancelBooking(bookingId);
+      showToast(`Slot reservation for Token ${liveQueue.token} has been cancelled.`, 'check_circle');
+    } catch {
+      showToast('Failed to cancel slot. Please try again.', 'error');
+    }
+  };
+
   return (
     <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-surface-container">
+      {/* Multi-Queue Switcher Tabs if farmer has >1 active reservation */}
+      {allQueues.length > 1 && (
+        <div className="mb-5 pb-4 border-b border-surface-container">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px] text-primary">view_carousel</span>
+              Your Active Mandi Queues ({allQueues.length})
+            </span>
+            <span className="text-[11px] text-on-surface-variant">Click token to switch monitor</span>
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            {allQueues.map((q) => {
+              const isSelected = q.bookingId === liveQueue.bookingId;
+              return (
+                <button
+                  key={q.bookingId}
+                  onClick={() => switchActiveQueue(q.bookingId)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 border ${
+                    isSelected
+                      ? 'bg-primary text-on-primary border-primary shadow-sm'
+                      : 'bg-surface-container-low hover:bg-surface-container text-on-surface border-surface-container'
+                  }`}
+                >
+                  <span>Token {q.token}</span>
+                  <span className="opacity-75 font-normal">({q.cropName?.split(' ')[0] || 'Produce'})</span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
+                      isSelected
+                        ? 'bg-primary-container text-primary-fixed'
+                        : 'bg-surface-container text-secondary font-bold'
+                    }`}
+                  >
+                    #{q.position}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-5 border-b border-surface-container">
         <div className="flex items-center gap-3">
@@ -26,19 +84,28 @@ export default function LiveQueueCard({ onOpenDelay }) {
               </span>
             </div>
             <p className="text-xs text-on-surface-variant">
-              {liveQueue.centreName} • {liveQueue.gate}
+              {liveQueue.centreName} &bull; {liveQueue.gate} &bull; <strong className="text-on-surface">{liveQueue.cropName}</strong>
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={onOpenDelay}
             className="px-3 py-2 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
             title="Request 15-minute postponement window"
           >
             <span className="material-symbols-outlined text-[16px] text-secondary">update</span>
-            Request 15m Delay
+            <span>Delay 15m</span>
+          </button>
+
+          <button
+            onClick={() => setCancelModalOpen(true)}
+            className="px-3 py-2 bg-error/10 hover:bg-error/20 text-error rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
+            title="Cancel this slot booking"
+          >
+            <span className="material-symbols-outlined text-[16px]">cancel</span>
+            <span>Cancel Slot</span>
           </button>
           
           <Link
@@ -59,7 +126,7 @@ export default function LiveQueueCard({ onOpenDelay }) {
           <p className="font-headline text-2xl sm:text-3xl font-extrabold text-primary mt-1">
             {liveQueue.token}
           </p>
-          <p className="text-[11px] text-primary font-semibold mt-0.5">Priority Slot Verified</p>
+          <p className="text-[11px] text-primary font-semibold mt-0.5">{liveQueue.quantityQuintals} Quintals</p>
         </div>
 
         {/* Position */}
@@ -97,6 +164,13 @@ export default function LiveQueueCard({ onOpenDelay }) {
       <VisualQueuePipeline
         tokens={liveQueue.queueTokens}
         currentServing={liveQueue.currentlyServing}
+      />
+
+      <CancelBookingModal
+        isOpen={cancelModalOpen}
+        onClose={() => setCancelModalOpen(false)}
+        onConfirm={handleCancelConfirm}
+        booking={liveQueue}
       />
     </div>
   );

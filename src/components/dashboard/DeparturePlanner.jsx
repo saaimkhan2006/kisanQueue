@@ -22,7 +22,7 @@ export default function DeparturePlanner({ onOpenMap }) {
               Smart Departure &amp; Travel Planner
             </h3>
             <p className="text-xs text-on-surface-variant">
-              Synchronized with Gate 2 weighbridge entry quota
+              Synchronized with {liveQueue.gate} weighbridge entry quota
             </p>
           </div>
         </div>
@@ -43,7 +43,9 @@ export default function DeparturePlanner({ onOpenMap }) {
             {liveQueue.commuteMinutes}{' '}
             <span className="text-sm font-normal text-on-surface-variant">min</span>
           </p>
-          <p className="text-xs text-on-surface-variant mt-0.5">8.5 km via GT Road</p>
+          <p className="text-xs text-on-surface-variant mt-0.5">
+            {liveQueue.commuteDistanceKm} km ({liveQueue.routeDesc})
+          </p>
         </div>
 
         {/* Recommended Departure */}

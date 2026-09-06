@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { centreService } from '../../services/centreService';
 import { CROPS } from '../../utils/constants';
@@ -8,16 +8,16 @@ export default function CentreDetails() {
   const [centre, setCentre] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadCentre();
-  }, [id]);
-
-  const loadCentre = async () => {
+  const loadCentre = useCallback(async () => {
     setIsLoading(true);
     const data = await centreService.getCentreById(id);
     setCentre(data);
     setIsLoading(false);
-  };
+  }, [id]);
+
+  useEffect(() => {
+    loadCentre();
+  }, [loadCentre]);
 
   if (isLoading || !centre) {
     return (
@@ -133,13 +133,13 @@ export default function CentreDetails() {
           </h3>
           <div className="text-xs text-on-surface-variant space-y-2 leading-relaxed bg-surface-container-low p-4 rounded-xl border border-surface-container">
             <p>
-              • <strong className="text-on-surface">Designated Tractor Gate:</strong> {centre.gateNo}. Automatic ANPR &amp; RFID barcode scanning upon entry.
+              &bull; <strong className="text-on-surface">Designated Tractor Gate:</strong> {centre.gateNo}. Automatic ANPR &amp; RFID barcode scanning upon entry.
             </p>
             <p>
-              • <strong className="text-on-surface">Remote Waiting Assurance:</strong> Do not arrive early. Arriving within your 15-minute scheduled call window prevents yard congestion.
+              &bull; <strong className="text-on-surface">Remote Waiting Assurance:</strong> Do not arrive early. Arriving within your 15-minute scheduled call window prevents yard congestion.
             </p>
             <p>
-              • <strong className="text-on-surface">Moisture Tolerance:</strong> Food Corporation of India (FCI) fair average quality (FAQ) moisture content strictly &lt; 12.0%.
+              &bull; <strong className="text-on-surface">Moisture Tolerance:</strong> Food Corporation of India (FCI) fair average quality (FAQ) moisture content strictly &lt; 12.0%.
             </p>
           </div>
         </div>

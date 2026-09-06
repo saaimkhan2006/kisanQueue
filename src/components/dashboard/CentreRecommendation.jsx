@@ -43,18 +43,18 @@ export default function CentreRecommendation() {
                 <span className="material-symbols-outlined text-[12px]">stars</span>
                 Top Recommendation for Today
               </span>
-              <span className="text-xs font-semibold text-secondary">Saves ~24 mins</span>
+              <span className="text-xs font-semibold text-secondary">Saves ~25 mins</span>
             </div>
 
             <h4 className="text-lg font-bold text-primary">
-              Taraori Sub-Yard Mandi
+              Nanjangud APMC Sub-Yard
             </h4>
             <p className="text-xs text-on-surface-variant mt-0.5">
-              Near Railway Station, Taraori (14.2 km • 35 min tractor drive)
+              Industrial Area Road, Nanjangud (16.4 km &bull; 36 min tractor drive)
             </p>
 
             <p className="text-xs font-medium text-on-surface mt-2 bg-surface-container-lowest/80 p-2.5 rounded-lg border border-surface-container max-w-xl">
-              💡 <span className="font-bold text-primary">Why this centre?</span> Although 5.7 km farther than Karnal Central, Taraori's live queue has only <span className="font-bold text-on-surface">4 farmers</span> (15m wait) vs <span className="font-bold text-on-surface">11 farmers</span> at Karnal (47m wait). Total time is faster!
+              Why this centre? Although 8.6 km farther than Bandipalya Central, Nanjangud's live queue has only <strong className="text-on-surface">3 farmers</strong> (12m wait) vs <strong className="text-on-surface">12 farmers</strong> at Bandipalya (48m wait). Total turnaround is faster!
             </p>
           </div>
 
@@ -64,16 +64,16 @@ export default function CentreRecommendation() {
               Total Expected Time
             </span>
             <span className="font-headline text-3xl font-extrabold text-primary my-0.5">
-              1h 15m
+              1h 13m
             </span>
             <div className="text-[11px] text-on-surface-variant flex items-center gap-1 font-mono">
-              <span>35m drive</span> + <span>15m queue</span> + <span>25m weigh</span>
+              <span>36m drive</span> + <span>12m queue</span> + <span>25m weigh</span>
             </div>
             <Link
               to="/farmer/book?centre=C002"
               className="mt-3 w-full py-2 bg-primary text-on-primary hover:bg-primary-container text-xs font-bold rounded-lg transition-colors text-center shadow-sm"
             >
-              Book at Taraori
+              Book at Nanjangud
             </Link>
           </div>
         </div>
@@ -83,29 +83,29 @@ export default function CentreRecommendation() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="p-3.5 rounded-xl bg-surface-container-low border border-surface-container">
           <div className="flex items-center justify-between text-xs mb-1">
-            <span className="font-bold text-on-surface">Karnal Central</span>
+            <span className="font-bold text-on-surface">Mysore (Bandipalya)</span>
             <span className="text-error font-semibold">Busy</span>
           </div>
-          <p className="text-xs text-on-surface-variant">8.5 km • 11 in queue</p>
-          <p className="text-sm font-bold text-on-surface mt-1">Total: 1h 39m</p>
+          <p className="text-xs text-on-surface-variant">7.8 km &bull; 12 in queue</p>
+          <p className="text-sm font-bold text-on-surface mt-1">Total: 1h 38m</p>
         </div>
 
         <div className="p-3.5 rounded-xl bg-primary-fixed/20 border border-primary/30 ring-1 ring-primary/20">
           <div className="flex items-center justify-between text-xs mb-1">
-            <span className="font-bold text-primary">Taraori Sub-Yard ★</span>
+            <span className="font-bold text-primary">Nanjangud Sub-Yard ★</span>
             <span className="text-emerald-700 font-semibold">Fast Turnaround</span>
           </div>
-          <p className="text-xs text-on-surface-variant">14.2 km • 4 in queue</p>
-          <p className="text-sm font-bold text-primary mt-1">Total: 1h 15m (Best)</p>
+          <p className="text-xs text-on-surface-variant">16.4 km &bull; 3 in queue</p>
+          <p className="text-sm font-bold text-primary mt-1">Total: 1h 13m (Best)</p>
         </div>
 
         <div className="p-3.5 rounded-xl bg-surface-container-low border border-surface-container">
           <div className="flex items-center justify-between text-xs mb-1">
-            <span className="font-bold text-on-surface">Nilokheri Centre</span>
+            <span className="font-bold text-on-surface">T. Narasipura Centre</span>
             <span className="text-emerald-700 font-semibold">Low Queue</span>
           </div>
-          <p className="text-xs text-on-surface-variant">19.0 km • 2 in queue</p>
-          <p className="text-sm font-bold text-on-surface mt-1">Total: 1h 18m</p>
+          <p className="text-xs text-on-surface-variant">24.0 km &bull; 2 in queue</p>
+          <p className="text-sm font-bold text-on-surface mt-1">Total: 1h 21m</p>
         </div>
       </div>
     </div>

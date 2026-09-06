@@ -1,8 +1,10 @@
 import React from 'react';
 import { Outlet, Link, NavLink } from 'react-router-dom';
+import { useLocationStore } from '../../store/locationStore';
 import Toast from '../common/Toast';
 
 export default function AdminLayout() {
+  const location = useLocationStore();
   return (
     <div className="min-h-screen bg-surface flex flex-col">
       {/* Admin Top Header */}
@@ -43,7 +45,7 @@ export default function AdminLayout() {
                 National APMC Grid Administration
               </h1>
               <p className="text-xs text-on-surface-variant">
-                Karnal Agricultural Procurement Cluster (Haryana)
+                {location.district} Agricultural Procurement Cluster ({location.state})
               </p>
             </div>
           </div>

@@ -5,6 +5,7 @@ import { calculateDepartureTime } from '../utils/timeUtils';
 
 export const useQueueStore = create((set, get) => ({
   liveQueue: null,
+  allQueues: [],
   isLoading: false,
   notificationAlert: null, // { type: 'APPROACHING' | 'CALLED', message: string }
   toast: null, // { message: string, type: string }
@@ -18,21 +19,29 @@ export const useQueueStore = create((set, get) => ({
 
   clearToast: () => set({ toast: null }),
 
-  fetchLiveQueue: async () => {
+  fetchLiveQueue: async (bookingId = null) => {
     set({ isLoading: true });
     try {
-      const data = await queueService.getLiveQueue();
-      set({ liveQueue: data, isLoading: false });
+      const [data, all] = await Promise.all([
+        queueService.getLiveQueue(bookingId),
+        queueService.getAllActiveQueues(),
+      ]);
+      set({ liveQueue: data, allQueues: all, isLoading: false });
       return data;
-    } catch (err) {
+    } catch {
       set({ isLoading: false });
     }
+  },
+
+  switchActiveQueue: async (bookingId) => {
+    bookingService.setActiveBookingId(bookingId);
+    return get().fetchLiveQueue(bookingId);
   },
 
   /**
    * DEMO STORY ACTION:
    * Simulates staff calling next token at Mandi counter.
-   * Decrements position from #12 -> #11 -> ... -> #5 (APPROACHING) -> #1 (CALLED)
+   * Decrements position from current -> ... -> #5 (APPROACHING) -> #1 (CALLED)
    */
   simulateStaffNextToken: () => {
     const { liveQueue, showToast } = get();
@@ -46,10 +55,17 @@ export const useQueueStore = create((set, get) => ({
 
     const nextPos = currentPos - 1;
     const nextWait = Math.max(0, liveQueue.estimatedWaitMinutes - 4);
-    
+
     // Increment currently serving token
-    const tokenNum = parseInt(liveQueue.currentlyServing.replace('C-', '')) + 1;
-    const nextServing = `C-${tokenNum}`;
+    const match = liveQueue.currentlyServing.match(/^([A-Za-z]+-)(\d+)$/);
+    let nextServing;
+    let tokenNum = 1;
+    if (match) {
+      tokenNum = parseInt(match[2], 10) + 1;
+      nextServing = `${match[1]}${String(tokenNum).padStart(match[2].length, '0')}`;
+    } else {
+      nextServing = `T-${Date.now().toString().slice(-3)}`;
+    }
 
     const newExpectedTurn = new Date(Date.now() + nextWait * 60 * 1000).toISOString();
     const newDeparture = calculateDepartureTime(newExpectedTurn, liveQueue.commuteMinutes).toISOString();
@@ -59,7 +75,8 @@ export const useQueueStore = create((set, get) => ({
       if (item.token === nextServing) {
         return { ...item, status: 'SERVING' };
       }
-      if (parseInt(item.token.replace('C-', '')) < tokenNum) {
+      const itemMatch = item.token.match(/\d+$/);
+      if (itemMatch && parseInt(itemMatch[0], 10) < tokenNum) {
         return { ...item, status: 'COMPLETED' };
       }
       return item;
@@ -69,15 +86,15 @@ export const useQueueStore = create((set, get) => ({
     if (nextPos === 5) {
       alert = {
         type: 'APPROACHING',
-        title: '⚠️ Turn Approaching!',
-        message: 'Your token C-117 is now #5 in queue! Please depart for Mandi Gate 2 immediately.',
+        title: 'Turn Approaching!',
+        message: `Your token ${liveQueue.token} is now #5 in queue! Please depart for ${liveQueue.gate} immediately.`,
       };
-      showToast('Position #5 reached! Start traveling to Mandi Gate 2 now.', 'directions_car');
+      showToast(`Position #5 reached! Start traveling to ${liveQueue.gate} now.`, 'directions_car');
     } else if (nextPos === 1) {
       alert = {
         type: 'CALLED',
-        title: '🚨 YOUR TOKEN IS CALLED!',
-        message: 'Token C-117 called to Weighbridge Counter 04! Gate entry guaranteed.',
+        title: 'YOUR TOKEN IS CALLED!',
+        message: `Token ${liveQueue.token} called to Weighbridge Counter 04! Gate entry guaranteed.`,
       };
       showToast('YOUR TOKEN IS CALLED! Proceed to Counter 04.', 'priority_high');
     } else {
@@ -96,25 +113,38 @@ export const useQueueStore = create((set, get) => ({
       lastSync: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
     };
 
-    set({ liveQueue: updatedQueue, notificationAlert: alert });
+    // Persist the advanced position back into the bookings list
+    if (liveQueue.bookingId) {
+      bookingService.updateBookingInPlace({
+        ...updatedQueue,
+        currentPosition: nextPos,
+        farmersAhead: nextPos - 1,
+      });
+    }
+
+    // Also update allQueues list
+    const updatedAll = get().allQueues.map((q) =>
+      q.bookingId === liveQueue.bookingId ? updatedQueue : q
+    );
+
+    set({ liveQueue: updatedQueue, allQueues: updatedAll, notificationAlert: alert });
   },
 
   requestDelayPass: async (minutes = 15) => {
-    const { showToast } = get();
+    const { showToast, liveQueue } = get();
     try {
-      const updated = await queueService.requestDelayPass(minutes);
-      showToast(`Grace Extension Granted: Sequence moved to #${updated.currentPosition} (+15 min window)`, 'schedule');
-      get().fetchLiveQueue();
-    } catch (err) {
+      const updated = await queueService.requestDelayPass(minutes, liveQueue?.bookingId);
+      showToast(`Grace Extension Granted: Sequence moved to #${updated.position} (+15 min window)`, 'schedule');
+      await get().fetchLiveQueue(liveQueue?.bookingId);
+    } catch {
       showToast('Unable to request delay pass.', 'error');
     }
   },
 
   resetQueueToInitial: async () => {
     const { showToast } = get();
-    localStorage.removeItem('kisanqueue_active_booking');
+    bookingService.clearAll();
     await get().fetchLiveQueue();
-    set({ notificationAlert: null });
-    showToast('Queue state reset to initial Position #12 for demo.', 'restart_alt');
-  }
+    showToast('Demo reset: Initial Mysore queues restored.', 'restart_alt');
+  },
 }));

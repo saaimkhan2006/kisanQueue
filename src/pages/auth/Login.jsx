@@ -125,17 +125,25 @@ export default function Login() {
             className="w-full py-2.5 bg-secondary-fixed text-secondary hover:bg-secondary-container hover:text-on-secondary-container rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[18px]">bolt</span>
-            <span>Instant Demo: Login as Rameshwar Singh</span>
+            <span>Instant Demo: Login as Suresh Gowda (Mysore)</span>
           </button>
           <p className="text-[11px] text-on-surface-variant mt-2">
-            Preloads active Token C-117 at Karnal Central Mandi
+            Preloads active Token MY-118 at Mysore APMC Yard (Bandipalya)
           </p>
 
-          <div className="mt-4 pt-4 border-t border-surface-container text-xs text-on-surface-variant">
-            New Farmer?{' '}
-            <Link to="/register" className="font-bold text-primary hover:underline">
-              Register eKYC &amp; Land Records
-            </Link>
+          <div className="mt-4 pt-4 border-t border-surface-container text-xs text-on-surface-variant flex items-center justify-between">
+            <div>
+              New Farmer?{' '}
+              <Link to="/register" className="font-bold text-primary hover:underline">
+                Register eKYC
+              </Link>
+            </div>
+            <div>
+              <Link to="/staff/login" className="font-bold text-slate-700 hover:text-primary hover:underline flex items-center gap-1">
+                <span className="material-symbols-outlined text-[15px]">badge</span>
+                <span>Staff Portal</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

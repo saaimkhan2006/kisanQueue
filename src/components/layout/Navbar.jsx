@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LANGUAGES, GOVT_METADATA } from '../../utils/constants';
+import { GOVT_METADATA } from '../../utils/constants';
 import { useAuthStore } from '../../store/authStore';
 import { useQueueStore } from '../../store/queueStore';
+import { useLocationStore } from '../../store/locationStore';
+import EditLocationModal from '../common/EditLocationModal';
 
 export default function Navbar() {
-  const [currentLang, setCurrentLang] = useState('en');
   const [highContrast, setHighContrast] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [editLocationOpen, setEditLocationOpen] = useState(false);
   const navigate = useNavigate();
 
   const user = useAuthStore((s) => s.user);
   const showToast = useQueueStore((s) => s.showToast);
+  const location = useLocationStore((s) => s.location);
 
   const toggleContrast = () => {
     const next = !highContrast;
@@ -37,29 +40,22 @@ export default function Navbar() {
           </span>
           <span className="text-primary-fixed-dim hidden sm:inline">|</span>
           <span className="hidden sm:inline text-primary-fixed font-normal">
-            {GOVT_METADATA.department} • {GOVT_METADATA.ministry}
+            {GOVT_METADATA.department} &bull; {GOVT_METADATA.ministry}
           </span>
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-4">
-          {/* Language Selector */}
-          <div className="flex items-center gap-1 cursor-pointer hover:text-primary-fixed transition-colors">
-            <span className="material-symbols-outlined text-[14px]">language</span>
-            <select
-              value={currentLang}
-              onChange={(e) => {
-                setCurrentLang(e.target.value);
-                showToast(`Language set to ${LANGUAGES.find(l => l.code === e.target.value)?.label}`, 'translate');
-              }}
-              className="bg-transparent text-on-primary text-[11px] font-semibold focus:outline-none cursor-pointer border-none py-0 pr-2"
-            >
-              {LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code} className="text-on-surface bg-surface">
-                  {lang.label}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="flex items-center gap-2.5 sm:gap-4">
+          {/* Editable City / Location Chip */}
+          <button
+            type="button"
+            onClick={() => setEditLocationOpen(true)}
+            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary-container hover:bg-primary-fixed/30 text-primary-fixed hover:text-white transition-all text-[11px] font-semibold border border-primary-fixed/20 shadow-sm"
+            title="Click to edit current city/district"
+          >
+            <span className="material-symbols-outlined text-[13px] text-secondary-fixed">location_on</span>
+            <span>{location.city}, {location.state}</span>
+            <span className="material-symbols-outlined text-[12px] opacity-75">edit</span>
+          </button>
 
           {/* High Contrast Toggle */}
           <button
@@ -157,6 +153,11 @@ export default function Navbar() {
           </Link>
         </div>
       </div>
+
+      <EditLocationModal
+        isOpen={editLocationOpen}
+        onClose={() => setEditLocationOpen(false)}
+      />
     </header>
   );
 }

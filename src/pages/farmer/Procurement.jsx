@@ -1,15 +1,47 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { procurementService } from '../../services/procurementService';
 import ProcurementTimeline from '../../components/dashboard/ProcurementTimeline';
 
 export default function Procurement() {
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    procurementService.getProcurementDetails().then(setData);
+    procurementService.getProcurementDetails().then((res) => {
+      setData(res);
+      setLoading(false);
+    });
   }, []);
 
-  if (!data) return null;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <span className="material-symbols-outlined text-[32px] animate-spin text-primary">progress_activity</span>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="max-w-xl mx-auto text-center py-16 px-6 bg-surface-container-lowest rounded-3xl border border-surface-container shadow-sm mt-8">
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+          <span className="material-symbols-outlined text-[36px]">receipt_long</span>
+        </div>
+        <h2 className="font-headline text-xl font-bold text-on-surface">No Active Procurement Found</h2>
+        <p className="text-xs text-on-surface-variant mt-2 max-w-md mx-auto">
+          You currently have no active or completed procurement consignment. Book a slot at an APMC Mandi to track weighbridge verification and digital slips.
+        </p>
+        <Link
+          to="/farmer/book"
+          className="inline-flex mt-6 px-6 py-2.5 bg-primary text-on-primary rounded-xl text-xs font-bold items-center gap-2 shadow-sm hover:bg-primary-container transition-all"
+        >
+          <span className="material-symbols-outlined text-[16px]">add</span>
+          <span>Book a Slot</span>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">

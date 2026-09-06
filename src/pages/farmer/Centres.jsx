@@ -1,40 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { centreService } from '../../services/centreService';
 import { CROPS } from '../../utils/constants';
+import { useLocationStore } from '../../store/locationStore';
 
 export default function Centres() {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
-  
+  const location = useLocationStore((s) => s.location);
+
   const [centres, setCentres] = useState([]);
   const [selectedCrop, setSelectedCrop] = useState('');
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [sortBy, setSortBy] = useState('totalTime'); // totalTime | distance | queue
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadCentres();
-  }, [selectedCrop]);
-
-  const loadCentres = async () => {
+  const loadCentres = useCallback(async () => {
     setIsLoading(true);
     const data = await centreService.getCentres(selectedCrop || null);
     setCentres(data);
     setIsLoading(false);
-  };
+  }, [selectedCrop]);
 
-  const filteredCentres = centres.filter((c) => {
-    if (!searchQuery) return true;
-    return (
-      c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.location.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }).sort((a, b) => {
-    if (sortBy === 'distance') return a.distanceKm - b.distanceKm;
-    if (sortBy === 'queue') return a.queueSize - b.queueSize;
-    return a.totalExpectedMinutes - b.totalExpectedMinutes;
-  });
+  useEffect(() => {
+    loadCentres();
+  }, [loadCentres]);
+
+  const filteredCentres = centres
+    .filter((c) => {
+      if (!searchQuery) return true;
+      return (
+        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.location.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    })
+    .sort((a, b) => {
+      if (sortBy === 'distance') return a.distanceKm - b.distanceKm;
+      if (sortBy === 'queue') return a.queueSize - b.queueSize;
+      return a.totalExpectedMinutes - b.totalExpectedMinutes;
+    });
 
   return (
     <div className="space-y-6">
@@ -42,7 +46,7 @@ export default function Centres() {
       <div>
         <div className="flex items-center gap-2 mb-1">
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary-fixed text-primary">
-            Sovereign APMC Mandi Directory
+            APMC Mandi Directory &bull; {location.city}
           </span>
           <span className="text-xs font-semibold text-secondary">
             Deterministic Congestion Algorithm
@@ -66,7 +70,7 @@ export default function Centres() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by Mandi name, locality, or APMC yard..."
+            placeholder={`Search ${location.city} Mandi name, locality, or APMC yard...`}
             className="w-full pl-9 pr-4 py-2 bg-surface-container-low text-on-surface rounded-xl text-sm focus:outline-none focus:bg-surface-container"
           />
         </div>
@@ -167,7 +171,7 @@ export default function Centres() {
                   {/* Recommendation explanation note */}
                   {isRec && (
                     <div className="p-3 bg-surface-container-lowest/90 rounded-xl border border-primary/20 text-xs font-medium text-primary mb-4">
-                      💡 {centre.recommendationReason}
+                      {centre.recommendationReason}
                     </div>
                   )}
 
@@ -213,11 +217,7 @@ export default function Centres() {
                     </Link>
                     <Link
                       to={`/farmer/book?centre=${centre.id}`}
-                      className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm flex items-center gap-1 ${
-                        isRec
-                          ? 'bg-primary text-on-primary hover:bg-primary-container'
-                          : 'bg-primary text-on-primary hover:bg-primary-container'
-                      }`}
+                      className="px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm flex items-center gap-1 bg-primary text-on-primary hover:bg-primary-container"
                     >
                       <span>Book Slot</span>
                       <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

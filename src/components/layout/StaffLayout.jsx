@@ -1,9 +1,18 @@
 import React from 'react';
-import { Outlet, Link, NavLink } from 'react-router-dom';
+import { Outlet, Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
 import { GOVT_METADATA } from '../../utils/constants';
 import Toast from '../common/Toast';
 
 export default function StaffLayout() {
+  const logout = useAuthStore((s) => s.logout);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/staff/login');
+  };
+
   return (
     <div className="min-h-screen bg-surface flex flex-col">
       {/* Sovereign Staff Header */}
@@ -14,7 +23,7 @@ export default function StaffLayout() {
               <span className="material-symbols-outlined text-[14px]">badge</span> APMC Officer Console
             </span>
             <span className="text-primary-fixed-dim">|</span>
-            <span className="text-primary-fixed">Karnal Central Yard &bull; Weighbridge Counter 04</span>
+            <span className="text-primary-fixed">Central APMC Procurement Yard &bull; Weighbridge Counter 02</span>
           </div>
           <div className="flex items-center gap-3">
             <Link
@@ -22,15 +31,16 @@ export default function StaffLayout() {
               className="text-primary-fixed hover:text-white transition-colors flex items-center gap-1"
             >
               <span className="material-symbols-outlined text-[14px]">swap_horiz</span>
-              <span>Switch to Farmer View</span>
+              <span>Farmer View</span>
             </Link>
             <span className="text-primary-fixed-dim">|</span>
-            <Link
-              to="/admin/dashboard"
-              className="text-primary-fixed hover:text-white transition-colors"
+            <button
+              onClick={handleLogout}
+              className="text-amber-300 hover:text-white transition-colors font-bold flex items-center gap-1"
             >
-              Admin Console
-            </Link>
+              <span className="material-symbols-outlined text-[14px]">logout</span>
+              <span>Logout</span>
+            </button>
           </div>
         </div>
 
@@ -44,7 +54,7 @@ export default function StaffLayout() {
                 Mandi Queue &amp; Procurement Operator Console
               </h1>
               <p className="text-xs text-on-surface-variant">
-                Official Staff: S. K. Verma (Procurement Inspector #409)
+                Official Staff: M. Kumar (Procurement Inspector #409)
               </p>
             </div>
           </div>
@@ -89,3 +99,4 @@ export default function StaffLayout() {
     </div>
   );
 }
+

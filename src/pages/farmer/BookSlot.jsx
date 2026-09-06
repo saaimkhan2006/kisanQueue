@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { centreService } from '../../services/centreService';
-import { bookingService } from '../../services/bookingService';
 import { useBookingStore } from '../../store/bookingStore';
 import { useQueueStore } from '../../store/queueStore';
 import { CROPS } from '../../utils/constants';
 
 export default function BookSlot() {
   const [searchParams] = useSearchParams();
-  const preselectedCentreId = searchParams.get('centre') || 'C002'; // default recommended Taraori
+  const preselectedCentreId = searchParams.get('centre') || 'C002'; // default recommended Nanjangud
 
   const [centres, setCentres] = useState([]);
   const [selectedCentreId, setSelectedCentreId] = useState(preselectedCentreId);
-  const [selectedCropId, setSelectedCropId] = useState('WHEAT');
-  const [quantity, setQuantity] = useState(60);
+  const [selectedCropId, setSelectedCropId] = useState('RAGI');
+  const [quantity, setQuantity] = useState(50);
   const [slotDate, setSlotDate] = useState('2026-09-06');
   const [slotTime, setSlotTime] = useState('10:00 AM - 12:00 PM');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,7 +27,7 @@ export default function BookSlot() {
 
   const selectedCrop = CROPS.find((c) => c.id === selectedCropId) || CROPS[0];
   const selectedCentre = centres.find((c) => c.id === selectedCentreId) || centres[0];
-  const estimatedPayout = (Number(quantity) || 0) * (selectedCrop?.msp || 2275);
+  const estimatedPayout = (Number(quantity) || 0) * (selectedCrop?.msp || 4290);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,8 +40,8 @@ export default function BookSlot() {
     try {
       const payload = {
         centreId: selectedCentre?.id || 'C001',
-        centreName: selectedCentre?.name || 'Karnal Central APMC Mandi',
-        gate: selectedCentre?.gateNo || 'Gate 2',
+        centreName: selectedCentre?.name || 'Mysore (Bandipalya) APMC Central Yard',
+        gate: selectedCentre?.gateNo || 'Gate 2 (Tractor Entry)',
         produceType: selectedCrop.id,
         cropName: selectedCrop.name,
         quantityQuintals: Number(quantity),
@@ -68,7 +67,7 @@ export default function BookSlot() {
       <div>
         <div className="flex items-center gap-2 mb-1">
           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary-fixed text-primary">
-            Sovereign E-Procurement Grid
+            E-Procurement Grid
           </span>
           <span className="text-xs font-semibold text-secondary">
             Direct DBT Payout Link
@@ -134,7 +133,7 @@ export default function BookSlot() {
           >
             {CROPS.map((crop) => (
               <option key={crop.id} value={crop.id}>
-                {crop.name} — MSP ₹{crop.msp.toLocaleString('en-IN')}/Qtl
+                {crop.name} &bull; MSP ₹{crop.msp.toLocaleString('en-IN')}/Qtl
               </option>
             ))}
           </select>
@@ -155,7 +154,7 @@ export default function BookSlot() {
               max="150"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              placeholder="e.g. 60"
+              placeholder="e.g. 50"
               className="w-full pl-4 pr-16 py-2.5 bg-surface-container-low text-on-surface rounded-xl border border-surface-container text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-on-surface-variant">
@@ -171,7 +170,7 @@ export default function BookSlot() {
               Estimated MSP Payout
             </span>
             <span className="text-xs text-on-surface-variant">
-              {quantity || 0} Qtl × ₹{selectedCrop.msp.toLocaleString('en-IN')} / Qtl
+              {quantity || 0} Qtl &times; ₹{selectedCrop.msp.toLocaleString('en-IN')} / Qtl
             </span>
           </div>
           <span className="font-headline text-2xl sm:text-3xl font-extrabold text-primary">
