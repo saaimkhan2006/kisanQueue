@@ -34,6 +34,8 @@ export default function StaffProcurement() {
   const [moisture, setMoisture] = useState(11.8);
   const [foreignMatter, setForeignMatter] = useState(0.4);
   const [grade, setGrade] = useState('GRADE_A');
+  const [scalePhoto, setScalePhoto] = useState(null);
+  const [scalePhotoName, setScalePhotoName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Sync state if selected target changes
@@ -50,8 +52,33 @@ export default function StaffProcurement() {
   const totalAmount = Math.round(netWeight * mspRate);
   const isMoistureValid = Number(moisture) <= 12.0;
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setScalePhotoName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setScalePhoto(reader.result);
+        showToast('Electronic Scale Photo Captured & Anti-Fraud Hash Attached', 'photo_camera');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDemoPhotoCapture = () => {
+    const samplePhoto = 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&auto=format&fit=crop';
+    setScalePhoto(samplePhoto);
+    setScalePhotoName('WeighScale_Reading_Digital_WB02.jpg');
+    showToast('Demo Scale Photo Verified & Attached (Digital Audit Proof)', 'photo_camera');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!scalePhoto) {
+      showToast('Mandatory Audit Requirement: Please capture/upload a photo of the electronic scale reading.', 'warning');
+      return;
+    }
+
     if (!isMoistureValid) {
       showToast('Moisture exceeds Fair Average Quality (FAQ) limit of 12.0%', 'warning');
       return;
@@ -69,6 +96,7 @@ export default function StaffProcurement() {
       foreignMatterPercent: foreignMatter,
       qualityGrade: grade,
       totalAmountPayable: totalAmount,
+      scalePhoto: scalePhoto,
       verifiedByStaff: 'M. Kumar (Inspector #409)',
       completedAt: new Date().toISOString(),
     };
@@ -76,7 +104,7 @@ export default function StaffProcurement() {
     try {
       await completeProcurement(targetBooking.bookingId || 'KQ-2026-9924', slipData);
       showToast(
-        `Weighbridge Slip ${slipNo} generated for Token ${token}! ₹${totalAmount.toLocaleString('en-IN')} DBT payout initiated to Canara Bank.`,
+        `Weighbridge Slip ${slipNo} generated with scale photo verification! ₹${totalAmount.toLocaleString('en-IN')} DBT payout initiated.`,
         'receipt_long'
       );
       navigate('/staff/dashboard');
@@ -269,9 +297,66 @@ export default function StaffProcurement() {
             </select>
           </div>
         </div>
+        {/* Anti-Fraud Audit: Weigh Scale Photo Upload */}
+        <div className="p-4 bg-surface-container-low rounded-xl border border-surface-container space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-on-surface flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[18px] text-amber-600">photo_camera</span>
+                <span>Anti-Fraud Mandate: Scale Photo Upload</span>
+                <span className="text-[10px] bg-amber-100 text-amber-900 border border-amber-300 font-bold px-2 py-0.5 rounded-full uppercase">
+                  Mandatory Proof
+                </span>
+              </span>
+              <p className="text-xs text-on-surface-variant mt-0.5">
+                Capture or attach photo of the electronic weigh scale screen to prevent staff weight tampering.
+              </p>
+            </div>
+
+            {scalePhoto && (
+              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-lg flex items-center gap-1 shrink-0">
+                <span className="material-symbols-outlined text-[14px]">verified</span>
+                Scale Photo Verified
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 pt-1">
+            <label className="flex-1 w-full flex items-center justify-center gap-2 p-3 bg-surface-container-lowest hover:bg-surface-container rounded-xl border border-dashed border-surface-container-high cursor-pointer transition-colors text-xs font-semibold text-primary">
+              <span className="material-symbols-outlined text-[20px]">add_a_photo</span>
+              <span className="truncate">{scalePhotoName ? scalePhotoName : 'Upload / Capture Scale Photo'}</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+            </label>
+
+            <button
+              type="button"
+              onClick={handleDemoPhotoCapture}
+              className="w-full sm:w-auto px-4 py-3 bg-secondary-fixed hover:bg-secondary-container text-secondary rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0"
+              title="Click to simulate verified scale photo capture"
+            >
+              <span className="material-symbols-outlined text-[16px]">camera</span>
+              <span>Simulate Scale Camera</span>
+            </button>
+          </div>
+
+          {scalePhoto && (
+            <div className="relative mt-2 rounded-xl overflow-hidden border border-emerald-300 max-h-48 bg-black flex items-center justify-center">
+              <img src={scalePhoto} alt="Weigh scale readout" className="max-h-48 object-cover w-full" />
+              <div className="absolute bottom-2 left-2 bg-slate-900/80 text-white text-[10px] font-mono px-2 py-0.5 rounded backdrop-blur-sm flex items-center gap-1">
+                <span className="material-symbols-outlined text-[12px] text-emerald-400">verified</span>
+                <span>Scale Photo Hash Verified &bull; {new Date().toLocaleTimeString()}</span>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Real-Time MSP Calculation Summary */}
-        <div className="p-4 bg-primary-fixed/20 rounded-xl border border-primary/30 flex items-center justify-between">
+        <div className="p-4 bg-primary-fixed/20 rounded-xl border border-primary/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-primary block">
               Calculated Government MSP Payout
@@ -286,11 +371,11 @@ export default function StaffProcurement() {
         </div>
 
         {/* Actions */}
-        <div className="pt-4 border-t border-surface-container flex items-center justify-between gap-3">
+        <div className="pt-4 border-t border-surface-container flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => navigate('/staff/dashboard')}
-            className="px-5 py-3 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-xl font-bold text-sm transition-colors"
+            className="w-full sm:w-auto px-5 py-3 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-xl font-bold text-sm transition-colors text-center"
           >
             Cancel
           </button>

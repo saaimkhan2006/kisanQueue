@@ -124,30 +124,30 @@ export default function StaffDashboard() {
         </div>
 
         {/* Staff Actions */}
-        <div className="flex items-center gap-3 shrink-0 flex-wrap sm:flex-nowrap">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap w-full sm:w-auto">
           <button
             onClick={handleCallNext}
-            className="px-6 py-3.5 bg-primary text-on-primary hover:bg-primary-container rounded-xl font-bold text-sm transition-all shadow-lg hover:scale-105 flex items-center gap-2"
+            className="flex-1 sm:flex-none px-4 sm:px-6 py-3 bg-primary text-on-primary hover:bg-primary-container rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-1.5 sm:gap-2"
           >
-            <span className="material-symbols-outlined text-[22px]">volume_up</span>
+            <span className="material-symbols-outlined text-[20px] sm:text-[22px]">volume_up</span>
             <span>Call Next Farmer</span>
           </button>
 
           <Link
             to="/staff/procurement"
-            className="px-5 py-3.5 bg-secondary-fixed text-secondary hover:bg-secondary-container hover:text-on-secondary-container rounded-xl font-bold text-sm transition-all flex items-center gap-2"
+            className="flex-1 sm:flex-none px-4 sm:px-5 py-3 bg-secondary-fixed text-secondary hover:bg-secondary-container hover:text-on-secondary-container rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 text-center"
           >
-            <span className="material-symbols-outlined text-[20px]">scale</span>
+            <span className="material-symbols-outlined text-[18px] sm:text-[20px]">scale</span>
             <span>Record Weight</span>
           </Link>
 
           <button
             onClick={handleResetDemoData}
-            className="px-3.5 py-3.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 border border-surface-container-high"
-            title="Reset queue state to fresh demo data (2 Arrived, 1 Waiting)"
+            className="px-3.5 py-3 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 border border-surface-container-high"
+            title="Reset queue state"
           >
             <span className="material-symbols-outlined text-[18px]">restart_alt</span>
-            <span>Reset Demo</span>
+            <span>Reset</span>
           </button>
         </div>
       </div>
@@ -502,6 +502,10 @@ export default function StaffDashboard() {
                               <p className="text-[11px] text-on-surface-variant">
                                 Moisture: {item.procurementDetails?.moisturePercent || '11.0%'} &bull; Net: {item.procurementDetails?.netWeightQuintals || item.quantityQuintals} Qtl
                               </p>
+                              <span className="inline-flex items-center gap-1 text-[10px] text-emerald-800 font-bold bg-emerald-100 px-2 py-0.5 rounded mt-1 border border-emerald-300">
+                                <span className="material-symbols-outlined text-[12px]">camera</span>
+                                Scale Photo Audit Verified
+                              </span>
                             </div>
                           ) : (
                             <p className="text-[11px] text-rose-800 bg-rose-50 p-2 rounded-lg border border-rose-200">

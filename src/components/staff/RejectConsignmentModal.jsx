@@ -43,7 +43,7 @@ export default function RejectConsignmentModal({ booking, isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-fade-in">
-      <div className="bg-surface-container-lowest border border-surface-container rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+      <div className="bg-surface-container-lowest border border-surface-container rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
         <div className="flex items-start justify-between border-b border-surface-container pb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center font-bold">
