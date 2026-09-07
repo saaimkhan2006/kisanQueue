@@ -22,6 +22,8 @@ export default function Dashboard() {
   const user = useAuthStore((s) => s.user);
   const location = useLocationStore((s) => s.location);
 
+  const hasActiveSlot = Boolean(liveQueue && !['PROCURED', 'REJECTED'].includes(liveQueue.status));
+
   const playSirenTest = () => {
     try {
       const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
@@ -45,7 +47,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {liveQueue && (
+        {hasActiveSlot && (
           <div className="flex items-center gap-2">
             <button
               onClick={playSirenTest}
@@ -68,7 +70,7 @@ export default function Dashboard() {
       )}
 
       {/* No Active Booking — Empty State */}
-      {!isLoading && !liveQueue && (
+      {!isLoading && !hasActiveSlot && (
         <div className="rounded-2xl border border-surface-container bg-surface-container-lowest p-8 sm:p-12 flex flex-col items-center text-center gap-5">
           <div className="w-20 h-20 rounded-3xl bg-primary-fixed/20 flex items-center justify-center">
             <span className="material-symbols-outlined text-[44px] text-primary">confirmation_number</span>
@@ -105,8 +107,8 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Active booking sections — only shown when there IS a booking */}
-      {liveQueue && (
+      {/* Active booking sections — only shown when there IS an active incomplete booking */}
+      {hasActiveSlot && (
         <>
           {/* Section 1: Sovereign Remote Waiting Guarantee Banner */}
           <QueueStatusBanner
@@ -125,11 +127,13 @@ export default function Dashboard() {
       {/* Section 4: Congestion-Aware Centre Recommendation — always visible */}
       <CentreRecommendation />
 
-      {/* Section 5: Procurement Lifecycle & Payment Grid — always visible */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ProcurementTimeline />
-        <PaymentCard />
-      </div>
+      {/* Section 5: Procurement Lifecycle & Payment Grid — ONLY visible for active incomplete booking */}
+      {hasActiveSlot && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ProcurementTimeline />
+          <PaymentCard />
+        </div>
+      )}
 
       {/* Interactive Modals */}
       <RouteMapModal isOpen={mapOpen} onClose={() => setMapOpen(false)} />

@@ -108,27 +108,22 @@ export const useBookingStore = create((set, get) => ({
   completeProcurement: async (bookingId, procurementData) => {
     const updated = await bookingService.completeProcurement(bookingId, procurementData);
     if (!updated) return;
-    set((state) => ({
-      bookings: state.bookings.map((b) => b.bookingId === bookingId ? updated : b),
-      // If this was the farmer's active booking, update it so Dashboard shows PROCURED
-      activeBooking: state.activeBooking?.bookingId === bookingId ? updated : state.activeBooking,
-    }));
-    // Sync the farmer's liveQueue so Dashboard + LiveQueue page reflect 'PROCURED'
+    
+    // Refresh full list + active booking (which will ignore completed bookings)
+    const bookings = await bookingService.getAllBookings();
+    const active = await bookingService.getMyActiveBooking();
+
+    set({
+      bookings,
+      activeBooking: active,
+    });
+
+    // Refresh live queue in queue store for active incomplete booking or clear
     const queueState = useQueueStore.getState();
-    if (queueState.liveQueue?.bookingId === bookingId) {
-      useQueueStore.setState((s) => ({
-        liveQueue: s.liveQueue
-          ? {
-              ...s.liveQueue,
-              status: 'PROCURED',
-              position: 0,
-              farmersAhead: 0,
-              currentlyServing: updated.token,
-              procurementDetails: procurementData,
-              completedAt: updated.completedAt,
-            }
-          : null,
-      }));
+    if (active) {
+      await queueState.fetchLiveQueue(active.bookingId);
+    } else {
+      useQueueStore.setState({ liveQueue: null });
     }
     return updated;
   },
@@ -137,24 +132,20 @@ export const useBookingStore = create((set, get) => ({
   rejectBooking: async (bookingId, reason) => {
     const updated = await bookingService.rejectBooking(bookingId, reason);
     if (!updated) return;
-    // Keep the rejected booking in the list so farmer can see the REJECTED status
-    set((state) => ({
-      bookings: state.bookings.map((b) => b.bookingId === bookingId ? updated : b),
-      activeBooking: state.activeBooking?.bookingId === bookingId ? updated : state.activeBooking,
-    }));
-    // Sync the farmer's liveQueue so Dashboard shows REJECTED with reason
+    
+    const bookings = await bookingService.getAllBookings();
+    const active = await bookingService.getMyActiveBooking();
+
+    set({
+      bookings,
+      activeBooking: active,
+    });
+
     const queueState = useQueueStore.getState();
-    if (queueState.liveQueue?.bookingId === bookingId) {
-      useQueueStore.setState((s) => ({
-        liveQueue: s.liveQueue
-          ? {
-              ...s.liveQueue,
-              status: 'REJECTED',
-              rejectionReason: reason,
-              rejectedAt: updated.rejectedAt,
-            }
-          : null,
-      }));
+    if (active) {
+      await queueState.fetchLiveQueue(active.bookingId);
+    } else {
+      useQueueStore.setState({ liveQueue: null });
     }
     return updated;
   },

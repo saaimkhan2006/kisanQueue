@@ -9,6 +9,7 @@ import EditLocationModal from '../common/EditLocationModal';
 export default function Navbar() {
   const [highContrast, setHighContrast] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [editLocationOpen, setEditLocationOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -27,87 +28,90 @@ export default function Navbar() {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/farmer/centres?q=${encodeURIComponent(searchQuery.trim())}`);
+      setMobileSearchOpen(false);
     }
   };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
       {/* Official Government Sovereign Top Banner */}
-      <div className="w-full bg-primary text-on-primary px-4 lg:px-6 py-1 flex items-center justify-between text-[11px] font-semibold tracking-wider">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <span className="flex items-center gap-1 uppercase">
-            <span className="material-symbols-outlined text-[14px]">flag</span> Digital India
-          </span>
-          <span className="text-primary-fixed-dim hidden sm:inline">|</span>
-          <span className="hidden sm:inline text-primary-fixed font-normal">
-            {GOVT_METADATA.department} &bull; {GOVT_METADATA.ministry}
-          </span>
-        </div>
+      <div className="w-full bg-primary text-on-primary px-3 sm:px-4 lg:px-6 py-1 overflow-x-auto scrollbar-none">
+        <div className="flex items-center justify-between min-w-max text-[11px] font-semibold tracking-wider gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <span className="flex items-center gap-1 uppercase">
+              <span className="material-symbols-outlined text-[14px]">flag</span> Digital India
+            </span>
+            <span className="text-primary-fixed-dim inline">|</span>
+            <span className="text-primary-fixed font-normal">
+              {GOVT_METADATA.department} &bull; {GOVT_METADATA.ministry}
+            </span>
+          </div>
 
-        <div className="flex items-center gap-2.5 sm:gap-4">
-          {/* Editable City / Location Chip */}
-          <button
-            type="button"
-            onClick={() => setEditLocationOpen(true)}
-            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary-container hover:bg-primary-fixed/30 text-primary-fixed hover:text-white transition-all text-[11px] font-semibold border border-primary-fixed/20 shadow-sm"
-            title="Click to edit current city/district"
-          >
-            <span className="material-symbols-outlined text-[13px] text-secondary-fixed">location_on</span>
-            <span>{location.city}, {location.state}</span>
-            <span className="material-symbols-outlined text-[12px] opacity-75">edit</span>
-          </button>
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            {/* Editable City / Location Chip */}
+            <button
+              type="button"
+              onClick={() => setEditLocationOpen(true)}
+              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary-container hover:bg-primary-fixed/30 text-primary-fixed hover:text-white transition-all text-[11px] font-semibold border border-primary-fixed/20 shadow-sm"
+              title="Click to edit current city/district"
+            >
+              <span className="material-symbols-outlined text-[13px] text-secondary-fixed">location_on</span>
+              <span>{location.city}, {location.state}</span>
+              <span className="material-symbols-outlined text-[12px] opacity-75">edit</span>
+            </button>
 
-          {/* High Contrast Toggle */}
-          <button
-            type="button"
-            onClick={toggleContrast}
-            aria-label="High Contrast Mode"
-            className="flex items-center gap-1 hover:text-primary-fixed transition-colors text-[11px]"
-          >
-            <span className="material-symbols-outlined text-[14px]">contrast</span>
-            <span className="hidden md:inline">A+ / A-</span>
-          </button>
+            {/* High Contrast Toggle */}
+            <button
+              type="button"
+              onClick={toggleContrast}
+              aria-label="High Contrast Mode"
+              className="flex items-center gap-1 hover:text-primary-fixed transition-colors text-[11px]"
+            >
+              <span className="material-symbols-outlined text-[14px]">contrast</span>
+              <span>A+ / A-</span>
+            </button>
 
-          {/* Screen Voice Reader */}
-          <button
-            type="button"
-            onClick={() => showToast('Screen voice reader initialized (Accessibility Audio active)', 'volume_up')}
-            aria-label="Screen Voice Reader"
-            className="flex items-center gap-1 hover:text-primary-fixed transition-colors text-[11px]"
-          >
-            <span className="material-symbols-outlined text-[14px]">volume_up</span>
-            <span className="hidden md:inline">Reader</span>
-          </button>
+            {/* Screen Voice Reader */}
+            <button
+              type="button"
+              onClick={() => showToast('Screen voice reader initialized (Accessibility Audio active)', 'volume_up')}
+              aria-label="Screen Voice Reader"
+              className="flex items-center gap-1 hover:text-primary-fixed transition-colors text-[11px]"
+            >
+              <span className="material-symbols-outlined text-[14px]">volume_up</span>
+              <span>Reader</span>
+            </button>
 
-          {/* Authenticated Farmer Badge */}
-          {user && (
-            <div className="hidden xl:flex items-center gap-1.5 pl-3 border-l border-primary-container">
-              <span className="material-symbols-outlined text-tertiary-fixed text-[14px]">verified</span>
-              <span className="text-surface-container-lowest font-medium">{user.name}</span>
-              <span className="text-primary-fixed-dim">({user.kisanId || user.badgeNo || 'KA-MY-8924'})</span>
-            </div>
-          )}
+            {/* Authenticated Farmer Badge */}
+            {user && (
+              <div className="hidden xl:flex items-center gap-1.5 pl-3 border-l border-primary-container">
+                <span className="material-symbols-outlined text-tertiary-fixed text-[14px]">verified</span>
+                <span className="text-surface-container-lowest font-medium">{user.name}</span>
+                <span className="text-primary-fixed-dim">({user.kisanId || user.badgeNo || 'KA-MY-8924'})</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Main Header Bar */}
-      <div className="h-16 w-full px-4 lg:px-6 flex items-center justify-between bg-surface-container-lowest">
-        <Link to="/farmer/dashboard" className="flex items-center gap-3 lg:gap-4 group">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-fixed shadow-sm group-hover:scale-105 transition-transform">
-            <span className="material-symbols-outlined text-[24px]">agriculture</span>
+      <div className="h-16 w-full px-3 sm:px-4 lg:px-6 flex items-center justify-between bg-surface-container-lowest gap-2">
+        <Link to="/farmer/dashboard" className="flex items-center gap-2 sm:gap-3 lg:gap-4 group shrink-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary flex items-center justify-center text-primary-fixed shadow-sm group-hover:scale-105 transition-transform">
+            <span className="material-symbols-outlined text-[22px] sm:text-[24px]">agriculture</span>
           </div>
-          <div className="h-8 w-px bg-surface-container-high hidden sm:block"></div>
+          <div className="h-7 sm:h-8 w-px bg-surface-container-high hidden sm:block"></div>
           <div>
-            <span className="font-headline text-[20px] font-bold text-primary tracking-tight block leading-tight">
+            <span className="font-headline text-base sm:text-[20px] font-bold text-primary tracking-tight block leading-tight">
               {GOVT_METADATA.portalName}
             </span>
-            <span className="text-[12px] font-medium text-on-surface-variant hidden sm:block">
+            <span className="text-[11px] sm:text-[12px] font-medium text-on-surface-variant hidden md:block">
               {GOVT_METADATA.tagline}
             </span>
           </div>
         </Link>
 
-        {/* Search Bar */}
+        {/* Search Bar (Desktop) */}
         <form onSubmit={handleSearch} className="flex-1 max-w-lg mx-4 hidden md:block">
           <div className="relative">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">
@@ -124,7 +128,17 @@ export default function Navbar() {
         </form>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          {/* Mobile Search Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+            className="md:hidden p-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"
+            title="Search Mandi"
+          >
+            <span className="material-symbols-outlined text-[22px]">search</span>
+          </button>
+
           <Link
             to="/farmer/notifications"
             className="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"
@@ -139,9 +153,9 @@ export default function Navbar() {
           {/* User Profile Pill */}
           <Link
             to="/farmer/profile"
-            className="flex items-center gap-2 pl-2 hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 pl-1 sm:pl-2 hover:opacity-90 transition-opacity"
           >
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm">
               <span className="material-symbols-outlined text-[18px]">person</span>
             </div>
             <div className="hidden lg:block text-left">
@@ -153,6 +167,32 @@ export default function Navbar() {
           </Link>
         </div>
       </div>
+
+      {/* Expandable Mobile Search Field */}
+      {mobileSearchOpen && (
+        <div className="md:hidden px-4 pb-3 pt-1 border-t border-surface-container bg-surface-container-lowest">
+          <form onSubmit={handleSearch} className="relative">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">
+              search
+            </span>
+            <input
+              type="text"
+              autoFocus
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search Mandi or Token..."
+              className="w-full pl-9 pr-8 py-2 bg-surface-container-low text-on-surface rounded-xl text-sm focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => setMobileSearchOpen(false)}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface"
+            >
+              <span className="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          </form>
+        </div>
+      )}
 
       <EditLocationModal
         isOpen={editLocationOpen}

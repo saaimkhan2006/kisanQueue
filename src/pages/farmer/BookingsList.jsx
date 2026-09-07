@@ -7,9 +7,10 @@ const STATUS_BADGE = {
   WAITING: { label: 'Waiting in Queue', color: 'bg-secondary-container text-on-secondary-container animate-pulse' },
   ARRIVED:  { label: 'Arrived at Mandi', color: 'bg-primary-container text-on-primary-container' },
   VERIFIED: { label: 'Gate Verified', color: 'bg-tertiary-container text-on-tertiary-container' },
-  PROCESSING: { label: 'Weighbridge Active', color: 'bg-amber-100 text-amber-900' },
-  PROCURED: { label: 'Procurement Done', color: 'bg-emerald-100 text-emerald-900' },
-  PAID:     { label: 'DBT Paid', color: 'bg-emerald-200 text-emerald-900' },
+  PROCESSING: { label: 'Weighbridge Active', color: 'bg-amber-100 text-amber-900 font-bold' },
+  PROCURED: { label: 'Payment Done', color: 'bg-emerald-100 text-emerald-900 font-bold border border-emerald-300' },
+  PAID:     { label: 'Payment Done', color: 'bg-emerald-200 text-emerald-900 font-bold' },
+  REJECTED: { label: 'Consignment Rejected', color: 'bg-error-container text-on-error-container' },
 };
 
 export default function BookingsList() {
@@ -171,27 +172,27 @@ export default function BookingsList() {
                   </span>
                 )}
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
                   <Link
                     to={`/farmer/booking/${booking.bookingId}`}
-                    className="px-3.5 py-2 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-xl text-xs font-semibold transition-colors"
+                    className="flex-1 sm:flex-none px-3.5 py-2 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-xl text-xs font-semibold transition-colors text-center"
                   >
                     View Pass
                   </Link>
                   <Link
                     to="/farmer/queue"
-                    className="px-4 py-2 bg-primary text-on-primary hover:bg-primary-container rounded-xl text-xs font-bold transition-colors shadow-sm flex items-center gap-1"
+                    className="flex-1 sm:flex-none px-4 py-2 bg-primary text-on-primary hover:bg-primary-container rounded-xl text-xs font-bold transition-colors shadow-sm flex items-center justify-center gap-1"
                   >
                     <span>Live Queue</span>
                     <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
                   </Link>
                   <button
                     onClick={() => setCancelModalBooking(booking)}
-                    className="px-3 py-2 bg-error/10 hover:bg-error/20 text-error rounded-xl text-xs font-semibold transition-colors flex items-center gap-1"
+                    className="px-3 py-2 bg-error/10 hover:bg-error/20 text-error rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1"
                     title="Cancel this booking"
                   >
                     <span className="material-symbols-outlined text-[16px]">cancel</span>
-                    <span className="hidden sm:inline">Cancel</span>
+                    <span>Cancel</span>
                   </button>
                 </div>
               </div>

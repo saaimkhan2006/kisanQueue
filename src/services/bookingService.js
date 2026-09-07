@@ -11,13 +11,13 @@ function loadBookings() {
   try {
     const raw = localStorage.getItem(BOOKINGS_KEY);
     if (!raw) {
-      // Seed with initial Mysore bookings on first load
-      saveBookings(MOCK_INITIAL_BOOKINGS);
-      return MOCK_INITIAL_BOOKINGS;
+      saveBookings([]);
+      return [];
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return MOCK_INITIAL_BOOKINGS;
+    return [];
   }
 }
 
@@ -74,7 +74,7 @@ export const bookingService = {
     return loadBookings();
   },
 
-  /** Return the booking currently selected as "active" for the queue monitor, or null */
+  /** Return the booking currently selected as "active" for the queue monitor, or null if no incomplete booking exists */
   async getMyActiveBooking() {
     await new Promise((r) => setTimeout(r, 100));
     const bookings = loadBookings();
@@ -83,10 +83,19 @@ export const bookingService = {
     const activeId = localStorage.getItem(ACTIVE_ID_KEY);
     if (activeId) {
       const found = bookings.find((b) => b.bookingId === activeId);
-      if (found) return found;
+      if (found && !['PROCURED', 'REJECTED'].includes(found.status)) {
+        return found;
+      }
     }
-    // Fall back to the first available booking
-    return bookings[0] ?? null;
+    // Fall back to the first available incomplete booking
+    const incompleteBooking = bookings.find((b) => !['PROCURED', 'REJECTED'].includes(b.status));
+    if (incompleteBooking) {
+      localStorage.setItem(ACTIVE_ID_KEY, incompleteBooking.bookingId);
+      return incompleteBooking;
+    }
+
+    localStorage.removeItem(ACTIVE_ID_KEY);
+    return null;
   },
 
   /** Set which booking is shown in the live queue monitor */
@@ -255,10 +264,10 @@ export const bookingService = {
     });
   },
 
-  /** Reset bookings to initial Mysore demo set */
+  /** Clear all bookings and reset to empty state */
   clearAll() {
-    saveBookings(MOCK_INITIAL_BOOKINGS);
-    localStorage.setItem(ACTIVE_ID_KEY, MOCK_INITIAL_BOOKINGS[0].bookingId);
+    saveBookings([]);
+    localStorage.removeItem(ACTIVE_ID_KEY);
   },
 };
 

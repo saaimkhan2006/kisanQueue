@@ -22,8 +22,8 @@ export default function StaffDashboard() {
     fetchAllBookings();
   }, [fetchAllBookings]);
 
-  // Raw list fallback to initial mock set if empty
-  const rawList = (bookings && bookings.length > 0) ? bookings : MOCK_INITIAL_BOOKINGS;
+  // Raw list of active and past bookings
+  const rawList = bookings || [];
 
   // Active Queue items: WAITING, ARRIVED, PROCESSING, CONFIRMED (exclude CANCELLED, PROCURED, REJECTED)
   const activeQueueBookings = rawList.filter(
@@ -101,7 +101,7 @@ export default function StaffDashboard() {
   const handleResetDemoData = async () => {
     bookingService.clearAll();
     await fetchAllBookings();
-    showToast('Queue reset to fresh demo data (2 Arrived, 1 Waiting)!', 'check_circle');
+    showToast('All active slot bookings cleared!', 'check_circle');
   };
 
   return (

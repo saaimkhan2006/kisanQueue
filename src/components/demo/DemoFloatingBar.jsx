@@ -11,7 +11,7 @@ export default function DemoFloatingBar() {
   if (!liveQueue) return null;
 
   return (
-    <div className="fixed bottom-24 lg:bottom-6 left-4 lg:left-80 z-40">
+    <div className="fixed bottom-20 lg:bottom-6 left-3 right-3 sm:left-4 sm:right-auto lg:left-80 z-40 max-w-full">
       {isOpen ? (
         <div className="bg-primary-container text-on-primary p-3.5 rounded-2xl shadow-2xl border border-primary-fixed/30 flex flex-col sm:flex-row items-center gap-3 backdrop-blur-md">
           <div className="flex items-center gap-2">

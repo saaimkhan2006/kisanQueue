@@ -1,14 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
-const STAGES = [
-  { id: 'BOOKED', label: 'Booking Confirmed', icon: 'check_circle', status: 'completed', desc: 'Slot & MSP quota locked' },
-  { id: 'WAITING', label: 'Remote Waiting', icon: 'timer', status: 'current', desc: 'Monitored via IoT dispatch' },
-  { id: 'VERIFIED', label: 'Gate Verification', icon: 'verified_user', status: 'upcoming', desc: 'Aadhaar & Land check' },
-  { id: 'PROCURED', label: 'Weighbridge & Payout', icon: 'scale', status: 'upcoming', desc: 'Moisture <12% & DBT credit' },
-];
+import { useQueueStore } from '../../store/queueStore';
 
 export default function ProcurementTimeline() {
+  const liveQueue = useQueueStore((s) => s.liveQueue);
+  const status = liveQueue?.status || 'WAITING';
+
+  let currentStageIdx = 1; // default WAITING
+  if (status === 'BOOKED' || status === 'CONFIRMED') {
+    currentStageIdx = 0;
+  } else if (status === 'WAITING') {
+    currentStageIdx = 1;
+  } else if (status === 'ARRIVED' || status === 'VERIFIED') {
+    currentStageIdx = 2;
+  } else if (status === 'PROCESSING') {
+    currentStageIdx = 3;
+  }
+
+  const STAGES = [
+    { id: 'BOOKED', label: 'Booking Confirmed', icon: 'check_circle', desc: 'Slot & MSP quota locked' },
+    { id: 'WAITING', label: 'Remote Waiting', icon: 'timer', desc: 'Monitored via IoT dispatch' },
+    { id: 'VERIFIED', label: 'Gate Verification', icon: 'verified_user', desc: 'Aadhaar & Land check' },
+    { id: 'PROCURED', label: 'Weighbridge & Payout', icon: 'scale', desc: 'Moisture <12% & DBT credit' },
+  ];
+
   return (
     <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-surface-container">
       <div className="flex items-center justify-between pb-4 mb-5 border-b border-surface-container">
@@ -21,7 +36,7 @@ export default function ProcurementTimeline() {
               Procurement Lifecycle Tracker
             </h3>
             <p className="text-xs text-on-surface-variant">
-              Stage 2 of 4 • Digital consignment pipeline
+              Stage {currentStageIdx + 1} of 4 • Digital consignment pipeline
             </p>
           </div>
         </div>
@@ -38,8 +53,8 @@ export default function ProcurementTimeline() {
       {/* Responsive Horizontal Stepper */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 relative">
         {STAGES.map((stage, idx) => {
-          const isCompleted = stage.status === 'completed';
-          const isCurrent = stage.status === 'current';
+          const isCompleted = idx < currentStageIdx;
+          const isCurrent = idx === currentStageIdx;
 
           return (
             <div

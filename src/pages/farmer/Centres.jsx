@@ -75,12 +75,12 @@ export default function Centres() {
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full sm:w-auto">
           {/* Crop Filter */}
           <select
             value={selectedCrop}
             onChange={(e) => setSelectedCrop(e.target.value)}
-            className="px-3 py-2 bg-surface-container-low text-on-surface rounded-xl text-sm border border-surface-container focus:outline-none"
+            className="w-full px-3 py-2 bg-surface-container-low text-on-surface rounded-xl text-sm border border-surface-container focus:outline-none"
           >
             <option value="">All Crops</option>
             {CROPS.map((crop) => (
@@ -94,11 +94,11 @@ export default function Centres() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-2 bg-surface-container-low text-on-surface rounded-xl text-sm border border-surface-container focus:outline-none"
+            className="w-full px-3 py-2 bg-surface-container-low text-on-surface rounded-xl text-sm border border-surface-container focus:outline-none"
           >
-            <option value="totalTime">Sort by: Lowest Total Time</option>
-            <option value="distance">Sort by: Distance</option>
-            <option value="queue">Sort by: Shortest Queue</option>
+            <option value="totalTime">Sort: Lowest Total Time</option>
+            <option value="distance">Sort: Distance</option>
+            <option value="queue">Sort: Shortest Queue</option>
           </select>
         </div>
       </div>

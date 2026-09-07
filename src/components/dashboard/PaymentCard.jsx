@@ -7,9 +7,14 @@ export default function PaymentCard() {
   const liveQueue = useQueueStore((s) => s.liveQueue);
   const user = useAuthStore((s) => s.user);
 
-  const amount = liveQueue ? (liveQueue.quantityQuintals * 4290) : 214500;
-  const crop = liveQueue ? liveQueue.cropName : 'Ragi (Finger Millet)';
-  const qty = liveQueue ? liveQueue.quantityQuintals : 50;
+  if (!liveQueue || ['PROCURED', 'REJECTED'].includes(liveQueue.status)) {
+    return null;
+  }
+
+  const rate = liveQueue.mspRatePerQuintal || 4290;
+  const qty = liveQueue.quantityQuintals || 50;
+  const amount = liveQueue.estimatedTotalAmount || (qty * rate);
+  const crop = liveQueue.cropName || 'Ragi (Finger Millet)';
 
   return (
     <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-surface-container">

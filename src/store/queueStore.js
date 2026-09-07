@@ -145,6 +145,6 @@ export const useQueueStore = create((set, get) => ({
     const { showToast } = get();
     bookingService.clearAll();
     await get().fetchLiveQueue();
-    showToast('Demo reset: Initial Mysore queues restored.', 'restart_alt');
+    showToast('Slot bookings reset and cleared.', 'restart_alt');
   },
 }));
